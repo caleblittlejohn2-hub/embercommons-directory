@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="EmberCommons Weekly — Business insights, real estate trends, community news, and local spotlights for San Antonio and beyond.">
+<title>EmberCommons Weekly — The Local Business Publication</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100;0,9..144,200;1,9..144,100;1,9..144,200;1,9..144,300;1,9..144,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{--void:#030402;--deep:#0A0E07;--soil:#141A0C;--warm:#1A1A0F;--jade:#00D48A;--jade-l:#3DFFC0;--ember:#D4720A;--ember-l:#FF9B3A;--gold:#C8A84B;--gold-l:#FFE08A;--p0:#F4EDD8;--p1:#D8CCAA;--p2:#9A8A68;--p3:#4A3E28;--be:rgba(212,114,10,.12);--bgl:rgba(200,168,75,.25)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{background:var(--deep);color:var(--p1);font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(200,168,75,.2);color:var(--p0)}
+::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--gold),var(--ember))}
+a{text-decoration:none}
+
+/* NAV — same as index */
+#nav{position:sticky;top:0;z-index:900;background:rgba(10,14,7,.97);backdrop-filter:blur(28px) saturate(1.5);border-bottom:1px solid rgba(200,168,75,.08);padding:0 2.5rem;height:62px;display:flex;align-items:center;gap:1.5rem}
+.n-logo{display:flex;flex-direction:column;flex-shrink:0;text-decoration:none}
+.n-logo-main{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.4rem;color:var(--p0);letter-spacing:-.01em;background:linear-gradient(125deg,var(--gold-l),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;line-height:1}
+.n-logo-sub{font-family:'DM Mono',monospace;font-size:.38rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(200,168,75,.4);margin-top:.15rem;font-style:normal}
+.n-links{flex:1;display:flex;gap:0;justify-content:center}
+.n-link{font-style:italic;font-size:.95rem;color:var(--p3);padding:.4rem 1rem;background:none;border:none;cursor:pointer;transition:color .25s;white-space:nowrap;text-decoration:none;display:block}
+.n-link:hover,.n-link.active{color:var(--gold)}
+.n-actions{display:flex;gap:.6rem;align-items:center;flex-shrink:0}
+.n-btn-ghost{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;color:var(--p3);background:transparent;border:1px solid var(--be);border-radius:1px;padding:.38rem .9rem;cursor:pointer;transition:all .3s;white-space:nowrap;text-decoration:none;display:inline-block}
+.n-btn-ghost:hover{border-color:var(--bgl);color:var(--gold)}
+.n-btn-gold{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;color:var(--void);background:linear-gradient(135deg,var(--gold-l),var(--gold));border:none;border-radius:1px;padding:.4rem 1rem;cursor:pointer;transition:all .3s;white-space:nowrap;text-decoration:none;display:inline-block}
+@media(max-width:760px){.n-links{display:none}}
+
+/* PUB HEADER */
+#pub-header{
+  padding:4.5rem 2.5rem 3.5rem;
+  border-bottom:1px solid rgba(200,168,75,.07);
+  background:linear-gradient(160deg,rgba(18,20,10,.98),rgba(10,14,7,.99));
+}
+.ph-inner{max-width:860px;margin:0 auto}
+.ph-badge{font-family:'DM Mono',monospace;font-size:.44rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.ph-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);animation:phPulse 2.5s ease-in-out infinite}
+@keyframes phPulse{0%,100%{opacity:.5}50%{opacity:1}}
+.ph-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:clamp(2.5rem,6vw,5rem);color:var(--p0);line-height:.96;letter-spacing:-.015em;margin-bottom:1rem}
+.ph-title .ec-w{background:linear-gradient(125deg,var(--gold-l),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ph-sub{font-style:italic;font-size:1.05rem;color:var(--p3);line-height:2;max-width:580px;margin-bottom:2rem}
+.ph-sub strong{color:var(--p1);font-weight:300;font-style:normal}
+
+/* Subscribe bar */
+.subscribe-bar{display:flex;gap:.6rem;max-width:440px}
+.sub-input{flex:1;background:rgba(5,8,3,.95);border:1px solid rgba(200,168,75,.15);border-radius:1px;padding:.78rem 1rem;color:var(--p0);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;outline:none;transition:border-color .3s}
+.sub-input:focus{border-color:var(--gold)}
+.sub-input::placeholder{color:rgba(154,138,104,.3)}
+.sub-btn{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.16em;text-transform:uppercase;color:var(--void);background:linear-gradient(135deg,var(--gold-l),var(--gold));border:none;border-radius:1px;padding:0 1.4rem;cursor:pointer;transition:all .3s;white-space:nowrap}
+.sub-btn:hover{box-shadow:0 4px 18px rgba(200,168,75,.35)}
+.sub-note{font-family:'DM Mono',monospace;font-size:.4rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(154,138,104,.25);margin-top:.5rem}
+
+/* CAT FILTER */
+#cat-filter{padding:1.2rem 2.5rem;border-bottom:1px solid rgba(200,168,75,.05);background:rgba(8,11,6,.95);overflow-x:auto}
+.cf-inner{display:flex;gap:.5rem;min-width:max-content}
+.cf-pill{font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.14em;text-transform:uppercase;padding:.34rem .85rem;border-radius:20px;cursor:pointer;background:transparent;border:1px solid var(--be);color:var(--p3);transition:all .3s;white-space:nowrap}
+.cf-pill:hover{border-color:rgba(200,168,75,.35);color:var(--gold)}
+.cf-pill.active{background:rgba(200,168,75,.1);border-color:var(--bgl);color:var(--gold-l)}
+
+/* MAIN LAYOUT */
+#blog-main{max-width:1200px;margin:0 auto;padding:3rem 2.5rem;display:grid;grid-template-columns:1fr 280px;gap:3rem;align-items:start}
+@media(max-width:920px){#blog-main{grid-template-columns:1fr}}
+
+/* FEATURED POST */
+.featured-post{
+  background:linear-gradient(145deg,rgba(22,28,12,.95),rgba(12,18,8,.98));
+  border:1px solid rgba(200,168,75,.15);border-radius:2px;
+  padding:2.5rem;margin-bottom:2rem;
+  position:relative;overflow:hidden;
+  cursor:pointer;text-decoration:none;display:block;
+  transition:border-color .35s,transform .4s;
+}
+.featured-post::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold-l),var(--gold),transparent)}
+.featured-post:hover{border-color:rgba(200,168,75,.3);transform:translateY(-3px)}
+.fp-issue{font-family:'DM Mono',monospace;font-size:.44rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;font-style:normal;display:flex;align-items:center;gap:.5rem}
+.fp-issue::before{content:'✦';font-size:.5rem}
+.fp-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:clamp(1.6rem,3.5vw,2.4rem);color:var(--p0);line-height:1.15;margin-bottom:.8rem}
+.fp-excerpt{font-style:italic;font-size:1rem;color:var(--p2);line-height:2;margin-bottom:1.2rem}
+.fp-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.fp-author{font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;color:var(--p3);font-style:normal}
+.fp-read{font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-style:normal}
+
+/* POST GRID */
+.posts-label{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.24em;text-transform:uppercase;color:var(--p3);margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:1px solid rgba(200,168,75,.05)}
+.posts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-bottom:2rem}
+.post-card{background:linear-gradient(145deg,rgba(20,26,12,.92),rgba(12,18,8,.97));border:1px solid rgba(200,168,75,.07);border-radius:2px;padding:1.6rem 1.7rem;cursor:pointer;text-decoration:none;display:block;transition:border-color .35s,transform .4s;position:relative;overflow:hidden}
+.post-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,75,.18),transparent)}
+.post-card:hover{border-color:rgba(200,168,75,.22);transform:translateY(-3px)}
+.pc-cat{font-family:'DM Mono',monospace;font-size:.4rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ember-l);margin-bottom:.4rem;font-style:normal}
+.pc-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.1rem;color:var(--p0);line-height:1.35;margin-bottom:.5rem}
+.pc-excerpt{font-style:italic;font-size:.9rem;color:var(--p3);line-height:1.8;margin-bottom:.8rem}
+.pc-meta{display:flex;align-items:center;justify-content:space-between}
+.pc-date{font-family:'DM Mono',monospace;font-size:.4rem;letter-spacing:.1em;text-transform:uppercase;color:var(--p3);font-style:normal}
+.pc-min{font-family:'DM Mono',monospace;font-size:.4rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-style:normal}
+
+/* SKELETON */
+.post-skeleton{background:rgba(20,26,12,.6);border:1px solid rgba(200,168,75,.04);border-radius:2px;height:180px;animation:shimmer 1.8s ease-in-out infinite}
+@keyframes shimmer{0%,100%{opacity:.35}50%{opacity:.6}}
+
+/* LOAD MORE */
+.load-more{display:block;width:100%;font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:var(--p3);background:transparent;border:1px solid var(--be);border-radius:1px;padding:.7rem;cursor:pointer;transition:all .3s;margin-top:.5rem}
+.load-more:hover{border-color:var(--bgl);color:var(--gold)}
+
+/* SIDEBAR */
+.blog-sidebar{display:flex;flex-direction:column;gap:1.5rem}
+.bs-widget{background:linear-gradient(145deg,rgba(20,26,12,.92),rgba(12,18,8,.97));border:1px solid rgba(200,168,75,.08);border-radius:2px;padding:1.5rem 1.6rem;position:relative;overflow:hidden}
+.bs-widget::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,75,.22),transparent)}
+.bw-title{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+
+/* Archive months */
+.archive-list{display:flex;flex-direction:column;gap:.3rem}
+.archive-item{display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(200,168,75,.04);cursor:pointer;transition:opacity .25s}
+.archive-item:last-child{border-bottom:none}
+.archive-item:hover{opacity:.7}
+.ai-month{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:.97rem;color:var(--p1)}
+.ai-count{font-family:'DM Mono',monospace;font-size:.4rem;letter-spacing:.1em;text-transform:uppercase;color:var(--p3);font-style:normal}
+
+/* Categories sidebar */
+.cat-list{display:flex;flex-direction:column;gap:.3rem}
+.cat-item{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;cursor:pointer;border-bottom:1px solid rgba(200,168,75,.04);transition:opacity .25s;text-decoration:none}
+.cat-item:last-child{border-bottom:none}
+.cat-item:hover{opacity:.7}
+.ci-icon{font-size:.9rem}
+.ci-name{font-style:italic;font-size:.95rem;color:var(--p2)}
+
+/* Spotlight upsell */
+.spotlight-upsell{background:linear-gradient(145deg,rgba(22,18,6,.97),rgba(14,12,4,.99));border:1px solid rgba(200,168,75,.15);border-radius:2px;padding:1.5rem 1.6rem;position:relative;overflow:hidden}
+.spotlight-upsell::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,75,.5),transparent)}
+.su-eye{font-family:'DM Mono',monospace;font-size:.43rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.su-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.05rem;color:var(--p0);margin-bottom:.5rem}
+.su-body{font-style:italic;font-size:.9rem;color:var(--p3);line-height:1.85;margin-bottom:1rem}
+.btn-su{display:block;text-align:center;font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:.93rem;color:var(--void);background:linear-gradient(135deg,var(--gold-l),var(--gold));border:none;border-radius:1px;padding:.7rem;cursor:pointer;transition:all .3s;text-decoration:none}
+.btn-su:hover{box-shadow:0 5px 18px rgba(200,168,75,.32)}
+
+/* FOOTER */
+footer{border-top:1px solid rgba(200,168,75,.07);padding:3rem 2.5rem;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
+.f-logo{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.1rem;color:var(--p0);text-decoration:none;white-space:nowrap;background:linear-gradient(125deg,var(--gold-l),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.f-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+.f-lnk{font-style:italic;font-size:.9rem;color:var(--p3);text-decoration:none;transition:color .25s}
+.f-lnk:hover{color:var(--gold-l)}
+.f-legal{font-family:'DM Mono',monospace;font-size:.41rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(154,138,104,.2);line-height:2;text-align:right}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="index.html" class="n-logo">
+    <span class="n-logo-main">EmberCommons</span>
+    <span class="n-logo-sub">by Emberline · Business Directory</span>
+  </a>
+  <div class="n-links">
+    <a href="index.html" class="n-link">Directory</a>
+    <a href="blog.html" class="n-link active">Weekly</a>
+    <a href="dashboard.html" class="n-link">My Listing</a>
+    <a href="guidelines.html" class="n-link">Guidelines</a>
+  </div>
+  <div class="n-actions">
+    <a href="dashboard.html" class="n-btn-ghost">Sign In</a>
+    <a href="onboard.html" class="n-btn-gold">✦ List Your Business</a>
+  </div>
+</nav>
+
+<!-- PUB HEADER -->
+<div id="pub-header">
+  <div class="ph-inner">
+    <div class="ph-badge">EmberCommons Weekly · Est. March 2026</div>
+    <h1 class="ph-title"><span class="ec-w">EmberCommons</span><br>Weekly</h1>
+    <p class="ph-sub">Business insights, real estate trends, community news, and local spotlights — published every week for <strong>San Antonio</strong> and the businesses that make it run.</p>
+    <div class="subscribe-bar">
+      <input class="sub-input" type="email" id="sub-email" placeholder="Your email address...">
+      <button class="sub-btn" onclick="subscribe()">Subscribe →</button>
+    </div>
+    <div class="sub-note" id="sub-note">Free · Weekly · No spam · Unsubscribe anytime</div>
+  </div>
+</div>
+
+<!-- CAT FILTER -->
+<div id="cat-filter">
+  <div class="cf-inner" id="cat-pills">
+    <button class="cf-pill active" onclick="setCat('all',this)">All Issues</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="blog-main">
+  <div class="blog-content">
+    <!-- Featured post -->
+    <div id="featured-wrap"></div>
+    <!-- Archive posts -->
+    <div class="posts-label" id="posts-label">All Issues</div>
+    <div class="posts-grid" id="posts-grid">
+      <div class="post-skeleton"></div>
+      <div class="post-skeleton"></div>
+      <div class="post-skeleton"></div>
+    </div>
+    <button class="load-more" id="load-more" onclick="loadMore()" style="display:none">Load More Issues →</button>
+  </div>
+
+  <aside class="blog-sidebar">
+    <!-- Spotlight upsell -->
+    <div class="spotlight-upsell">
+      <div class="su-eye">✦ Business Spotlight</div>
+      <h3 class="su-title">Get featured in the Weekly.</h3>
+      <p class="su-body">Featured and Partner listing members are eligible for a monthly business spotlight — read by hundreds of business owners and consumers. Standard members: upgrade to be considered.</p>
+      <a href="onboard.html" class="btn-su">Upgrade Your Listing →</a>
+    </div>
+
+    <!-- Categories -->
+    <div class="bs-widget">
+      <div class="bw-title">Topics</div>
+      <div class="cat-list" id="sidebar-cats"></div>
+    </div>
+
+    <!-- Archive -->
+    <div class="bs-widget">
+      <div class="bw-title">Archive</div>
+      <div class="archive-list" id="archive-list">
+        <div class="post-skeleton" style="height:36px;margin-bottom:.3rem"></div>
+        <div class="post-skeleton" style="height:36px;margin-bottom:.3rem"></div>
+        <div class="post-skeleton" style="height:36px"></div>
+      </div>
+    </div>
+
+    <!-- Directory CTA -->
+    <div class="bs-widget">
+      <div class="bw-title">Browse the Directory</div>
+      <p style="font-style:italic;font-size:.92rem;color:var(--p3);line-height:1.8;margin-bottom:1rem">Find vetted local businesses serving San Antonio — from home services to healthcare.</p>
+      <a href="index.html" style="display:block;text-align:center;font-style:italic;font-size:.93rem;color:var(--gold);border:1px solid rgba(200,168,75,.2);border-radius:1px;padding:.65rem;text-decoration:none;transition:all .3s" onmouseover="this.style.borderColor='rgba(200,168,75,.45)'" onmouseout="this.style.borderColor='rgba(200,168,75,.2)'">Browse Directory →</a>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <a href="index.html" class="f-logo">EmberCommons</a>
+  <div class="f-links">
+    <a href="index.html" class="f-lnk">Directory</a>
+    <a href="dashboard.html" class="f-lnk">Dashboard</a>
+    <a href="onboard.html" class="f-lnk">List Your Business</a>
+    <a href="guidelines.html" class="f-lnk">Guidelines</a>
+    <a href="https://emberlinegroup.org" class="f-lnk">Emberline Holdings</a>
+    <a href="privacy.html" class="f-lnk">Privacy</a>
+  </div>
+  <div class="f-legal"><p>© 2026 Emberline Holdings Company LLC</p><p>EmberCommons Weekly</p></div>
+</footer>
+
+<script>
+const SB='https://rqytpqaswofdwhmsaykn.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxeXRwcWFzd29mZHdobXNheWtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MTU5MzksImV4cCI6MjA4ODQ5MTkzOX0.vzsT4oWSxKoWzfDmw7SaCaImA6_SshYwuLA9_nmNHtg';
+const sb=supabase.createClient(SB,SK);
+let allPosts=[],page=0,perPage=9,currentCat='all';
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function fmtDate(d){if(!d)return'';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+
+async function boot(){
+  await Promise.all([loadCats(),loadPosts()]);
+  buildArchive();
+}
+
+async function loadCats(){
+  const{data}=await sb.from('ec_blog_categories').select('*').eq('is_active',true).order('display_order');
+  if(!data?.length)return;
+  const pills=document.getElementById('cat-pills');
+  const sidebar=document.getElementById('sidebar-cats');
+  data.forEach(c=>{
+    const b=document.createElement('button');b.className='cf-pill';b.dataset.cat=c.slug;
+    b.textContent=`${c.icon||''} ${c.name}`;b.onclick=()=>setCat(c.slug,b);
+    pills.appendChild(b);
+    const a=document.createElement('a');a.href='#';a.className='cat-item';
+    a.innerHTML=`<span class="ci-icon">${c.icon||'✦'}</span><span class="ci-name">${c.name}</span>`;
+    a.onclick=(e)=>{e.preventDefault();setCat(c.slug,document.querySelector(`.cf-pill[data-cat="${c.slug}"]`));};
+    sidebar.appendChild(a);
+  });
+}
+
+async function loadPosts(){
+  const{data}=await sb.from('ec_blog_posts').select('id,title,slug,excerpt,category_slug,published_at,read_minutes,is_weekly,is_featured,week_number,week_year,author_name').eq('is_published',true).order('published_at',{ascending:false});
+  allPosts=data||[];
+  renderPosts();
+}
+
+function renderPosts(){
+  const filtered=currentCat==='all'?allPosts:allPosts.filter(p=>p.category_slug===currentCat);
+  document.getElementById('posts-label').textContent=currentCat==='all'?`All Issues (${filtered.length})`:`${currentCat.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())} (${filtered.length})`;
+
+  // Featured — first post
+  const featWrap=document.getElementById('featured-wrap');
+  const feat=filtered.find(p=>p.is_featured)||filtered[0];
+  if(feat){
+    featWrap.innerHTML=`<a href="post.html?slug=${feat.slug}" class="featured-post">
+      <div class="fp-issue">${feat.is_weekly?`Issue ${feat.week_number} · ${feat.week_year}`:feat.category_slug||'Editorial'}</div>
+      <div class="fp-title">${esc(feat.title)}</div>
+      <div class="fp-excerpt">${esc((feat.excerpt||'').slice(0,200))}${(feat.excerpt||'').length>200?'…':''}</div>
+      <div class="fp-meta">
+        <span class="fp-author">${esc(feat.author_name||'EmberCommons Editorial')} · ${fmtDate(feat.published_at)}</span>
+        <span class="fp-read">${feat.read_minutes||3} min read →</span>
+      </div>
+    </a>`;
+  }else{featWrap.innerHTML='';}
+
+  const rest=filtered.filter(p=>p.id!==feat?.id);
+  const visible=rest.slice(0,perPage);
+  document.getElementById('posts-grid').innerHTML=visible.length
+    ?visible.map(p=>`<a href="post.html?slug=${p.slug}" class="post-card">
+        <div class="pc-cat">${p.is_weekly?`Issue ${p.week_number}·${p.week_year}`:p.category_slug||'Editorial'}</div>
+        <div class="pc-title">${esc(p.title)}</div>
+        <div class="pc-excerpt">${esc((p.excerpt||'').slice(0,100))}${(p.excerpt||'').length>100?'…':''}</div>
+        <div class="pc-meta">
+          <span class="pc-date">${fmtDate(p.published_at)}</span>
+          <span class="pc-min">${p.read_minutes||3} min →</span>
+        </div>
+      </a>`).join('')
+    :'<div style="grid-column:1/-1;text-align:center;padding:3rem;font-style:italic;color:var(--p3)">No posts in this category yet. Check back soon.</div>';
+
+  const lm=document.getElementById('load-more');
+  lm.style.display=rest.length>perPage?'block':'none';
+}
+
+function loadMore(){perPage+=9;renderPosts();}
+
+function setCat(cat,btn){
+  currentCat=cat;perPage=9;
+  document.querySelectorAll('.cf-pill').forEach(p=>p.classList.remove('active'));
+  btn?.classList.add('active');
+  renderPosts();
+}
+
+function buildArchive(){
+  const months={};
+  allPosts.forEach(p=>{
+    if(!p.published_at)return;
+    const d=new Date(p.published_at);
+    const key=d.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+    months[key]=(months[key]||0)+1;
+  });
+  const list=document.getElementById('archive-list');
+  const entries=Object.entries(months).slice(0,8);
+  if(!entries.length){list.innerHTML='<div style="font-style:italic;font-size:.9rem;color:var(--p3)">Archive coming soon.</div>';return;}
+  list.innerHTML=entries.map(([m,c])=>`
+    <div class="archive-item">
+      <span class="ai-month">${m}</span>
+      <span class="ai-count">${c} issue${c!==1?'s':''}</span>
+    </div>`).join('');
+}
+
+async function subscribe(){
+  const email=document.getElementById('sub-email').value.trim();
+  const note=document.getElementById('sub-note');
+  if(!email||!email.includes('@')){note.textContent='Please enter a valid email address.';note.style.color='var(--ember-l)';return;}
+  try{
+    await sb.from('imat_subscribers').upsert({email,source:'embercommons-weekly'},{onConflict:'email'});
+    note.textContent='✦ You\'re subscribed. Welcome to the Weekly.';note.style.color='var(--gold)';
+    document.getElementById('sub-email').value='';
+  }catch(e){note.textContent='Something went wrong. Try hello@emberlinegroup.org';note.style.color='var(--ember-l)';}
+}
+
+boot();
+</script>
+<script src="/legal.js" data-product="world"></script>
+</body>
+</html>
