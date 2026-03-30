@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="EmberCommons — The Emberline Business Directory. Curated local and professional businesses serving San Antonio and beyond.">
+<title>EmberCommons — Where Local Business Lives</title>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"EmberCommons","url":"https://directory.emberlinegroup.org","description":"The Emberline curated business directory. Where local business lives."}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100;0,9..144,200;1,9..144,100;1,9..144,200;1,9..144,300;1,9..144,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --void:#030402;--deep:#0A0E07;--soil:#141A0C;--bark:#1E2714;
+  --warm:#1A1A0F;--warm-l:#242415;
+  --jade:#00D48A;--jade-l:#3DFFC0;
+  --ember:#D4720A;--ember-l:#FF9B3A;
+  --gold:#C8A84B;--gold-l:#FFE08A;--gold-d:#8A6A1A;
+  --p0:#F4EDD8;--p1:#D8CCAA;--p2:#9A8A68;--p3:#4A3E28;
+  --be:rgba(212,114,10,.12);--bel:rgba(212,114,10,.3);
+  --bj:rgba(0,212,138,.1);--bjl:rgba(0,212,138,.25);
+  --bg:rgba(200,168,75,.1);--bgl:rgba(200,168,75,.25);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{background:var(--deep);color:var(--p1);font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(200,168,75,.2);color:var(--p0)}
+::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--gold),var(--ember))}
+a{text-decoration:none}
+
+/* ── NAV ─────────────────────────────────────────── */
+#nav{
+  position:sticky;top:0;z-index:900;
+  background:rgba(10,14,7,.97);
+  backdrop-filter:blur(28px) saturate(1.5);
+  border-bottom:1px solid rgba(200,168,75,.08);
+  padding:0 2.5rem;height:62px;
+  display:flex;align-items:center;gap:1.5rem;
+}
+.n-logo{display:flex;flex-direction:column;flex-shrink:0;text-decoration:none}
+.n-logo-main{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:100;
+  font-size:1.4rem;color:var(--p0);letter-spacing:-.01em;
+  background:linear-gradient(125deg,var(--gold-l),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  white-space:nowrap;line-height:1;
+}
+.n-logo-sub{font-family:'DM Mono',monospace;font-size:.38rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(200,168,75,.4);margin-top:.15rem;font-style:normal}
+.n-links{flex:1;display:flex;gap:0;justify-content:center}
+.n-link{font-style:italic;font-size:.95rem;color:var(--p3);padding:.4rem 1rem;background:none;border:none;cursor:pointer;transition:color .25s;white-space:nowrap;text-decoration:none;display:block}
+.n-link:hover{color:var(--gold)}
+.n-actions{display:flex;gap:.6rem;align-items:center;flex-shrink:0}
+.n-btn-ghost{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;color:var(--p3);background:transparent;border:1px solid var(--be);border-radius:1px;padding:.38rem .9rem;cursor:pointer;transition:all .3s;white-space:nowrap;text-decoration:none;display:inline-block}
+.n-btn-ghost:hover{border-color:var(--bgl);color:var(--gold)}
+.n-btn-gold{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;color:var(--void);background:linear-gradient(135deg,var(--gold-l),var(--gold));border:none;border-radius:1px;padding:.4rem 1rem;cursor:pointer;transition:all .3s;white-space:nowrap;text-decoration:none;display:inline-block}
+.n-btn-gold:hover{box-shadow:0 4px 20px rgba(200,168,75,.35)}
+@media(max-width:760px){.n-links{display:none}}
+
+/* ── HERO ────────────────────────────────────────── */
+#hero{
+  background:linear-gradient(160deg,rgba(20,20,10,.95) 0%,rgba(10,14,7,.98) 60%,rgba(8,11,5,1) 100%);
+  border-bottom:1px solid rgba(200,168,75,.07);
+  padding:5rem 2.5rem 4rem;
+  position:relative;overflow:hidden;
+  text-align:center;
+}
+.hero-bg-glyph{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Fraunces',serif;font-style:italic;font-weight:100;
+  font-size:28rem;color:rgba(200,168,75,.018);line-height:1;
+  pointer-events:none;user-select:none;white-space:nowrap;
+}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.32em;text-transform:uppercase;color:rgba(200,168,75,.45);margin-bottom:1.2rem}
+.hero-title{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:100;
+  font-size:clamp(3.5rem,9vw,8rem);
+  line-height:.94;letter-spacing:-.02em;
+  margin-bottom:1.2rem;
+  background:linear-gradient(135deg,var(--gold-l) 0%,var(--gold) 30%,var(--ember-l) 60%,var(--gold) 85%,var(--gold-l) 100%);
+  background-size:300% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:heroShim 12s ease-in-out infinite;
+  white-space:nowrap;
+}
+@keyframes heroShim{0%,100%{background-position:0% center}50%{background-position:100% center}}
+.hero-warcry{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:clamp(1rem,2.2vw,1.6rem);color:rgba(244,237,216,.4);margin-bottom:2.5rem;line-height:2}
+.hero-warcry strong{color:var(--p1);font-weight:300;font-style:normal}
+
+/* Hero search */
+.hero-search{max-width:620px;margin:0 auto 2rem;display:flex;gap:.6rem}
+.hs-input{
+  flex:1;background:rgba(5,8,3,.95);border:1px solid rgba(200,168,75,.18);border-radius:1px;
+  padding:.9rem 1.2rem;color:var(--p0);
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;
+  outline:none;transition:border-color .3s,box-shadow .3s;
+}
+.hs-input:focus{border-color:var(--gold);box-shadow:0 0 20px rgba(200,168,75,.1)}
+.hs-input::placeholder{color:rgba(154,138,104,.3)}
+.hs-btn{
+  font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--void);
+  background:linear-gradient(135deg,var(--gold-l),var(--gold));
+  border:none;border-radius:1px;padding:0 1.8rem;cursor:pointer;transition:all .3s;white-space:nowrap;
+}
+.hs-btn:hover{box-shadow:0 6px 24px rgba(200,168,75,.4)}
+
+/* Hero stats */
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap}
+.hstat{text-align:center}
+.hstat-n{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:2rem;color:var(--gold-l);line-height:1;text-shadow:0 0 24px rgba(200,168,75,.35)}
+.hstat-l{font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.14em;text-transform:uppercase;color:var(--p3);margin-top:.25rem}
+
+/* ── CATEGORY BAR ────────────────────────────────── */
+#cat-bar{
+  background:rgba(8,11,6,.95);
+  border-bottom:1px solid rgba(200,168,75,.06);
+  padding:.8rem 2.5rem;
+  position:sticky;top:62px;z-index:800;
+  overflow-x:auto;
+}
+.cat-bar-inner{display:flex;gap:.5rem;align-items:center;min-width:max-content}
+.cat-pill{
+  font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.35rem .85rem;border-radius:20px;cursor:pointer;
+  background:transparent;border:1px solid var(--be);color:var(--p3);
+  transition:all .3s;white-space:nowrap;display:flex;align-items:center;gap:.35rem;
+}
+.cat-pill:hover{border-color:rgba(200,168,75,.35);color:var(--gold)}
+.cat-pill.active{background:rgba(200,168,75,.1);border-color:var(--bgl);color:var(--gold-l)}
+.cat-dot{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.6}
+
+/* ── MAIN LAYOUT ─────────────────────────────────── */
+#main{max-width:1280px;margin:0 auto;padding:3rem 2.5rem;display:grid;grid-template-columns:1fr 300px;gap:2.5rem;align-items:start}
+@media(max-width:960px){#main{grid-template-columns:1fr}}
+
+/* ── LISTINGS ────────────────────────────────────── */
+.listings-wrap{}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap}
+.sh-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.5rem;color:var(--p0)}
+.sh-count{font-family:'DM Mono',monospace;font-size:.43rem;letter-spacing:.14em;text-transform:uppercase;color:var(--p3)}
+.listings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+
+/* Listing card — more directory-like, less glass-tech */
+.lcard{
+  background:linear-gradient(145deg,rgba(20,26,12,.94),rgba(12,18,8,.98));
+  border:1px solid rgba(200,168,75,.08);border-radius:2px;
+  padding:1.5rem 1.6rem;
+  position:relative;overflow:hidden;
+  transition:border-color .35s,transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s;
+  cursor:pointer;text-decoration:none;display:block;
+}
+.lcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,75,.22),transparent)}
+.lcard:hover{border-color:rgba(200,168,75,.28);transform:translateY(-3px);box-shadow:0 12px 40px rgba(200,168,75,.06)}
+.lcard.is-featured{border-color:rgba(200,168,75,.18)}
+.lcard.is-featured::before{background:linear-gradient(90deg,transparent,rgba(200,168,75,.45),transparent)}
+.lcard.is-partner{border-color:rgba(212,114,10,.2)}
+.lcard.is-partner::before{background:linear-gradient(90deg,transparent,rgba(212,114,10,.35),transparent)}
+.lcard.is-emberline{border-color:rgba(200,168,75,.25);background:linear-gradient(145deg,rgba(26,30,14,.96),rgba(14,20,8,.99))}
+
+/* Card layout */
+.lc-top{display:flex;align-items:flex-start;gap:.9rem;margin-bottom:.9rem}
+.lc-icon-wrap{width:44px;height:44px;border-radius:2px;background:rgba(200,168,75,.06);border:1px solid rgba(200,168,75,.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.lc-header{}
+.lc-cat{font-family:'DM Mono',monospace;font-size:.4rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ember-l);margin-bottom:.2rem;font-style:normal}
+.lc-name{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.15rem;color:var(--p0);line-height:1.1;white-space:nowrap}
+.lc-tagline{font-style:italic;font-size:.93rem;color:var(--p2);line-height:1.75;margin-bottom:.5rem}
+.lc-desc{font-style:italic;font-size:.88rem;color:var(--p3);line-height:1.75;margin-bottom:.8rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.lc-bottom{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.lc-area{font-family:'DM Mono',monospace;font-size:.4rem;letter-spacing:.12em;text-transform:uppercase;color:var(--p3);display:flex;align-items:center;gap:.3rem;font-style:normal}
+.lc-badge{font-family:'DM Mono',monospace;font-size:.38rem;letter-spacing:.12em;text-transform:uppercase;padding:.16rem .5rem;border-radius:1px;font-style:normal}
+.badge-partner{background:rgba(212,114,10,.1);color:var(--ember-l);border:1px solid rgba(212,114,10,.2)}
+.badge-featured{background:rgba(200,168,75,.08);color:var(--gold);border:1px solid rgba(200,168,75,.18)}
+.badge-ember{background:rgba(200,168,75,.1);color:var(--gold-l);border:1px solid rgba(200,168,75,.22)}
+.badge-standard{background:rgba(74,62,40,.25);color:var(--p3);border:1px solid rgba(74,62,40,.4)}
+
+/* Skeleton */
+.lc-skeleton{background:rgba(20,26,12,.6);border:1px solid rgba(200,168,75,.04);border-radius:2px;height:140px;animation:shimmer 1.8s ease-in-out infinite}
+@keyframes shimmer{0%,100%{opacity:.35}50%{opacity:.6}}
+
+/* Empty */
+.dir-empty{grid-column:1/-1;text-align:center;padding:4rem 2rem}
+.de-icon{font-size:2.5rem;margin-bottom:.8rem;display:block;opacity:.35}
+.de-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.4rem;color:var(--p2);margin-bottom:.4rem}
+.de-body{font-style:italic;font-size:.96rem;color:var(--p3);line-height:1.9}
+
+/* ── SIDEBAR ─────────────────────────────────────── */
+.sidebar{display:flex;flex-direction:column;gap:1.5rem}
+
+/* Sidebar widget */
+.widget{
+  background:linear-gradient(145deg,rgba(20,26,12,.92),rgba(12,18,8,.97));
+  border:1px solid rgba(200,168,75,.08);border-radius:2px;padding:1.5rem 1.6rem;
+  position:relative;overflow:hidden;
+}
+.widget::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,75,.25),transparent)}
+.w-title{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+
+/* List your business widget */
+.lyb-price{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:2.2rem;color:var(--gold-l);line-height:1;margin:.4rem 0;text-shadow:0 0 20px rgba(200,168,75,.3)}
+.lyb-sub{font-style:italic;font-size:.92rem;color:var(--p3);line-height:1.75;margin-bottom:1rem}
+.btn-widget{
+  display:block;text-align:center;width:100%;
+  font-family:'Fraunces',serif;font-style:italic;font-weight:300;
+  font-size:.97rem;color:var(--void);
+  background:linear-gradient(135deg,var(--gold-l),var(--gold));
+  border:none;border-radius:1px;padding:.78rem;
+  cursor:pointer;transition:all .3s;text-decoration:none;
+  margin-bottom:.5rem;
+}
+.btn-widget:hover{box-shadow:0 6px 22px rgba(200,168,75,.35)}
+.btn-widget-ghost{
+  display:block;text-align:center;width:100%;
+  font-style:italic;font-size:.93rem;color:var(--p3);
+  background:transparent;border:1px solid var(--be);
+  border-radius:1px;padding:.72rem;
+  cursor:pointer;transition:all .3s;text-decoration:none;
+}
+.btn-widget-ghost:hover{border-color:var(--bgl);color:var(--gold)}
+
+/* Weekly digest widget */
+.wkly-post{padding:.7rem 0;border-bottom:1px solid rgba(200,168,75,.05);cursor:pointer;text-decoration:none;display:block;transition:opacity .25s}
+.wkly-post:last-child{border-bottom:none;padding-bottom:0}
+.wkly-post:hover{opacity:.75}
+.wp-cat{font-family:'DM Mono',monospace;font-size:.39rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.2rem;font-style:normal}
+.wp-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:.97rem;color:var(--p1);line-height:1.4}
+.wp-meta{font-family:'DM Mono',monospace;font-size:.4rem;letter-spacing:.1em;text-transform:uppercase;color:var(--p3);margin-top:.25rem;font-style:normal}
+
+/* ── BLOG TEASER ─────────────────────────────────── */
+#blog-teaser{
+  background:linear-gradient(160deg,rgba(18,20,10,.97),rgba(10,14,7,.99));
+  border-top:1px solid rgba(200,168,75,.07);
+  padding:5rem 2.5rem;
+}
+.bt-inner{max-width:1280px;margin:0 auto}
+.bt-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
+.bt-title-group{}
+.bt-eye{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.bt-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:clamp(1.8rem,4vw,3rem);color:var(--p0)}
+.bt-see-all{font-style:italic;font-size:.95rem;color:var(--gold);text-decoration:none;transition:color .25s}
+.bt-see-all:hover{color:var(--gold-l)}
+.bt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem}
+.bt-card{background:linear-gradient(145deg,rgba(20,26,12,.9),rgba(12,18,8,.96));border:1px solid rgba(200,168,75,.08);border-radius:2px;padding:2rem;text-decoration:none;display:block;transition:border-color .35s,transform .4s;position:relative;overflow:hidden}
+.bt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,75,.2),transparent)}
+.bt-card:hover{border-color:rgba(200,168,75,.25);transform:translateY(-3px)}
+.bc-week{font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;font-style:normal}
+.bc-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.2rem;color:var(--p0);line-height:1.35;margin-bottom:.5rem}
+.bc-excerpt{font-style:italic;font-size:.93rem;color:var(--p3);line-height:1.85;margin-bottom:.9rem}
+.bc-meta{display:flex;align-items:center;justify-content:space-between}
+.bc-author{font-family:'DM Mono',monospace;font-size:.41rem;letter-spacing:.1em;text-transform:uppercase;color:var(--p3);font-style:normal}
+.bc-read{font-family:'DM Mono',monospace;font-size:.41rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-style:normal}
+
+/* ── UPSELL BANNER ───────────────────────────────── */
+#upsell-banner{
+  background:linear-gradient(135deg,rgba(20,16,6,.98),rgba(14,12,4,.99));
+  border-top:1px solid rgba(200,168,75,.1);
+  border-bottom:1px solid rgba(200,168,75,.1);
+  padding:3rem 2.5rem;
+  position:relative;overflow:hidden;
+}
+#upsell-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(200,168,75,.025),transparent);pointer-events:none}
+.ub-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center}
+.ub-text{}
+.ub-eye{font-family:'DM Mono',monospace;font-size:.44rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.ub-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:clamp(1.4rem,3vw,2.2rem);color:var(--p0);line-height:1.2;margin-bottom:.5rem}
+.ub-sub{font-style:italic;font-size:.98rem;color:var(--p3);line-height:1.9}
+.ub-actions{display:flex;flex-direction:column;gap:.6rem;flex-shrink:0}
+@media(max-width:700px){.ub-inner{grid-template-columns:1fr}.ub-actions{flex-direction:row;flex-wrap:wrap}}
+
+/* ── FOOTER ──────────────────────────────────────── */
+footer{border-top:1px solid rgba(200,168,75,.07);padding:3rem 2.5rem;max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
+.f-logo{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.1rem;color:var(--p0);text-decoration:none;white-space:nowrap;background:linear-gradient(125deg,var(--gold-l),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.f-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+.f-lnk{font-style:italic;font-size:.9rem;color:var(--p3);text-decoration:none;transition:color .25s}
+.f-lnk:hover{color:var(--gold-l)}
+.f-legal{font-family:'DM Mono',monospace;font-size:.41rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(154,138,104,.2);line-height:2;text-align:right}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="index.html" class="n-logo">
+    <span class="n-logo-main">EmberCommons</span>
+    <span class="n-logo-sub">by Emberline · Business Directory</span>
+  </a>
+  <div class="n-links">
+    <a href="index.html" class="n-link">Directory</a>
+    <a href="blog.html" class="n-link">Weekly</a>
+    <a href="dashboard.html" class="n-link">My Listing</a>
+    <a href="guidelines.html" class="n-link">Guidelines</a>
+  </div>
+  <div class="n-actions">
+    <a href="dashboard.html" class="n-btn-ghost">Sign In</a>
+    <a href="onboard.html" class="n-btn-gold">✦ List Your Business</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div id="hero">
+  <div class="hero-bg-glyph">EC</div>
+  <div class="hero-eyebrow">The Emberline Business Directory · San Antonio, TX</div>
+  <h1 class="hero-title">EmberCommons</h1>
+  <p class="hero-warcry">Where <strong>local business</strong> lives — vetted, curated, and held to a standard.</p>
+  <div class="hero-search">
+    <input class="hs-input" id="search-input" type="text" placeholder="Search businesses, services, categories..." oninput="filterListings()">
+    <button class="hs-btn" onclick="filterListings()">Search</button>
+  </div>
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-n" id="stat-total">—</div><div class="hstat-l">Listed Businesses</div></div>
+    <div class="hstat"><div class="hstat-n">10</div><div class="hstat-l">Categories</div></div>
+    <div class="hstat"><div class="hstat-n">3</div><div class="hstat-l">Listing Tiers</div></div>
+    <div class="hstat"><div class="hstat-n">Weekly</div><div class="hstat-l">Editorial</div></div>
+  </div>
+</div>
+
+<!-- CATEGORY BAR -->
+<div id="cat-bar">
+  <div class="cat-bar-inner" id="cat-pills">
+    <button class="cat-pill active" onclick="setCat('all',this)"><span class="cat-dot"></span>All</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="listings-wrap">
+    <div class="section-head">
+      <div class="sh-title" id="dir-title">All Businesses</div>
+      <div class="sh-count" id="dir-count"></div>
+    </div>
+    <div class="listings-grid" id="listings-grid">
+      <div class="lc-skeleton"></div>
+      <div class="lc-skeleton"></div>
+      <div class="lc-skeleton"></div>
+      <div class="lc-skeleton"></div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <!-- List your business -->
+    <div class="widget">
+      <div class="w-title">✦ List Your Business</div>
+      <div class="lyb-price">$49<span style="font-size:1rem;color:var(--p3)">/mo</span></div>
+      <p class="lyb-sub">Join the EmberCommons directory. Vetted, professional, and seen by the right people.</p>
+      <a href="onboard.html" class="btn-widget">✦ Get Started</a>
+      <a href="guidelines.html" class="btn-widget-ghost">Read the Guidelines →</a>
+    </div>
+
+    <!-- Weekly blog posts -->
+    <div class="widget">
+      <div class="w-title">EmberCommons Weekly</div>
+      <div id="sidebar-posts">
+        <div class="lc-skeleton" style="height:60px;margin-bottom:.6rem"></div>
+        <div class="lc-skeleton" style="height:60px;margin-bottom:.6rem"></div>
+        <div class="lc-skeleton" style="height:60px"></div>
+      </div>
+      <a href="blog.html" style="display:block;margin-top:1rem;font-style:italic;font-size:.9rem;color:var(--gold);text-align:right">All issues →</a>
+    </div>
+
+    <!-- Dashboard CTA -->
+    <div class="widget" style="border-color:var(--bj)">
+      <div class="w-title" style="color:var(--jade)">Already Listed?</div>
+      <p style="font-style:italic;font-size:.93rem;color:var(--p3);line-height:1.8;margin-bottom:1rem">Access your dashboard — manage your profile, send invoices, and communicate with clients.</p>
+      <a href="dashboard.html" class="btn-widget" style="background:linear-gradient(135deg,var(--jade-l),var(--jade))">Go to My Dashboard</a>
+    </div>
+  </aside>
+</div>
+
+<!-- UPSELL BANNER -->
+<div id="upsell-banner">
+  <div class="ub-inner">
+    <div class="ub-text">
+      <div class="ub-eye">EmberCommons Featured &amp; Partner Tiers</div>
+      <h2 class="ub-title">More visibility.<br><em>More clients.</em></h2>
+      <p class="ub-sub">Featured and Partner listings receive priority placement, logo display, photo galleries, and a monthly feature in EmberCommons Weekly — read by hundreds of local business owners and consumers every week.</p>
+    </div>
+    <div class="ub-actions">
+      <a href="onboard.html" class="n-btn-gold" style="padding:.7rem 1.6rem;font-family:'Fraunces',serif;font-style:italic;font-size:.97rem">✦ Upgrade Your Listing</a>
+      <a href="blog.html" class="n-btn-ghost" style="padding:.68rem 1.4rem">Read the Weekly →</a>
+    </div>
+  </div>
+</div>
+
+<!-- BLOG TEASER -->
+<div id="blog-teaser">
+  <div class="bt-inner">
+    <div class="bt-head">
+      <div class="bt-title-group">
+        <div class="bt-eye">EmberCommons Weekly</div>
+        <h2 class="bt-title">The publication for<br><em>local business.</em></h2>
+      </div>
+      <a href="blog.html" class="bt-see-all">Browse all issues →</a>
+    </div>
+    <div class="bt-grid" id="blog-grid">
+      <div class="lc-skeleton" style="height:180px"></div>
+      <div class="lc-skeleton" style="height:180px"></div>
+      <div class="lc-skeleton" style="height:180px"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="index.html" class="f-logo">EmberCommons</a>
+  <div class="f-links">
+    <a href="blog.html" class="f-lnk">Weekly</a>
+    <a href="dashboard.html" class="f-lnk">Dashboard</a>
+    <a href="onboard.html" class="f-lnk">List Your Business</a>
+    <a href="guidelines.html" class="f-lnk">Guidelines</a>
+    <a href="https://emberlinegroup.org" class="f-lnk">Emberline Holdings</a>
+    <a href="privacy.html" class="f-lnk">Privacy</a>
+    <a href="terms.html" class="f-lnk">Terms</a>
+  </div>
+  <div class="f-legal"><p>© 2026 Emberline Holdings Company LLC</p><p>No Ads · Vetted Listings Only</p></div>
+</footer>
+
+<script>
+const SB='https://rqytpqaswofdwhmsaykn.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxeXRwcWFzd29mZHdobXNheWtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MTU5MzksImV4cCI6MjA4ODQ5MTkzOX0.vzsT4oWSxKoWzfDmw7SaCaImA6_SshYwuLA9_nmNHtg';
+const sb=supabase.createClient(SB,SK);
+let allListings=[],currentCat='all';
+
+const ICONS={'home-services':'🏠','healthcare':'⚕️','education':'🎓','technology':'💻','beauty-wellness':'✨','food-beverage':'🍽️','professional':'💼','arts-creative':'🎨','retail':'🛍️','community':'🤝','media':'📚'};
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+async function boot(){
+  await Promise.all([loadCats(),loadListings(),loadBlogPosts()]);
+}
+
+async function loadCats(){
+  const{data}=await sb.from('ember_directory_categories').select('*').eq('is_active',true).order('display_order');
+  if(!data?.length)return;
+  const pills=document.getElementById('cat-pills');
+  data.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='cat-pill';b.dataset.cat=c.slug;
+    b.innerHTML=`<span class="cat-dot"></span>${c.icon||''} ${c.name}`;
+    b.onclick=()=>setCat(c.slug,b);
+    pills.appendChild(b);
+  });
+}
+
+async function loadListings(){
+  const grid=document.getElementById('listings-grid');
+  try{
+    // Pull directory listings — order by display_order (Emberline ventures first), then featured, then creation date
+    const{data:listings}=await sb
+      .from('ember_directory_listings')
+      .select('*')
+      .eq('status','approved')
+      .eq('subscription_status','active')
+      .order('display_order',{ascending:true})
+      .order('is_featured',{ascending:false})
+      .order('created_at',{ascending:true});
+
+    allListings=[];
+    if(listings?.length)listings.forEach(l=>allListings.push({...l,_src:'dir'}));
+    document.getElementById('stat-total').textContent=allListings.length;
+    render(allListings);
+  }catch(e){
+    grid.innerHTML=`<div class="dir-empty"><span class="de-icon">✦</span><div class="de-title">Directory loading...</div><p class="de-body">Check back shortly or <a href="onboard.html" style="color:var(--gold)">apply to list your business</a>.</p></div>`;
+  }
+}
+
+function render(items){
+  const grid=document.getElementById('listings-grid');
+  const title=document.getElementById('dir-title');
+  const count=document.getElementById('dir-count');
+  if(!items.length){
+    grid.innerHTML=`<div class="dir-empty"><span class="de-icon">🔍</span><div class="de-title">No results.</div><p class="de-body">Try a different search or <a href="onboard.html" style="color:var(--gold)">apply to be listed</a>.</p></div>`;
+    title.textContent='No results';count.textContent='';return;
+  }
+  const search=(document.getElementById('search-input')?.value||'').trim();
+  title.textContent=search?`Results for "${search}"`:currentCat==='all'?'All Businesses':`${currentCat.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}`;
+  count.textContent=items.length+' listing'+(items.length!==1?'s':'');
+  grid.innerHTML=items.map(l=>{
+    const icon=ICONS[l.category]||'✦';
+    const isEmber=l._emberline||l.is_emberline_venture;
+    const isPartner=l.tier==='partner';
+    const isFeat=l.is_featured&&!isPartner;
+    const cls=['lcard',isEmber?'is-emberline':'',isPartner&&!isEmber?'is-partner':'',isFeat?'is-featured':''].filter(Boolean).join(' ');
+    const badge=isEmber?`<span class="lc-badge badge-ember">Emberline</span>`:isPartner?`<span class="lc-badge badge-partner">Partner</span>`:isFeat?`<span class="lc-badge badge-featured">Featured</span>`:`<span class="lc-badge badge-standard">Listed</span>`;
+    const area=l.service_area==='local'?'📍 Local':l.service_area==='regional'?'📍 Regional':l.service_area==='national'?'🌐 National':'📍 Available';
+    const tag=l.website_url?`a href="${l.website_url}" target="_blank" rel="noopener"`:'div';
+    const closeTag=l.website_url?'a':'div';
+    return`<${tag} class="${cls}">
+      <div class="lc-top">
+        <div class="lc-icon-wrap">${icon}</div>
+        <div class="lc-header">
+          <div class="lc-cat">${(l.category||'').replace(/-/g,' ')}</div>
+          <div class="lc-name">${esc(l.business_name)}</div>
+        </div>
+      </div>
+      ${l.tagline?`<div class="lc-tagline">${esc(l.tagline)}</div>`:''}
+      ${l.description?`<div class="lc-desc">${esc(l.description.slice(0,130)+(l.description.length>130?'\u2026':''))}</div>`:''}
+      <div class="lc-bottom"><span class="lc-area">${area}</span>${badge}</div>
+    </${closeTag}>`;
+  }).join('');
+}
+
+function filterListings(){
+  const q=(document.getElementById('search-input')?.value||'').trim().toLowerCase();
+  let r=allListings;
+  if(currentCat!=='all')r=r.filter(l=>l.category===currentCat);
+  if(q)r=r.filter(l=>(l.business_name+' '+(l.tagline||'')+' '+(l.description||'')+' '+(l.category||'')).toLowerCase().includes(q));
+  render(r);
+}
+
+function setCat(cat,btn){
+  currentCat=cat;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  filterListings();
+}
+
+async function loadBlogPosts(){
+  try{
+    const{data}=await sb.from('ec_blog_posts').select('id,title,slug,excerpt,category_slug,published_at,read_minutes,is_weekly,week_number,week_year').eq('is_published',true).order('published_at',{ascending:false}).limit(3);
+    if(!data?.length)return;
+    // Sidebar
+    document.getElementById('sidebar-posts').innerHTML=data.slice(0,3).map(p=>`
+      <a href="post.html?slug=${p.slug}" class="wkly-post">
+        <div class="wp-cat">${p.is_weekly?`Issue ${p.week_number}·${p.week_year}`:p.category_slug||'Editorial'}</div>
+        <div class="wp-title">${esc(p.title)}</div>
+        <div class="wp-meta">${p.read_minutes||3} min read</div>
+      </a>`).join('');
+    // Blog grid
+    document.getElementById('blog-grid').innerHTML=data.map(p=>`
+      <a href="post.html?slug=${p.slug}" class="bt-card">
+        <div class="bc-week">${p.is_weekly?`Issue ${p.week_number} · ${p.week_year}`:p.category_slug||'Editorial'}</div>
+        <div class="bc-title">${esc(p.title)}</div>
+        <div class="bc-excerpt">${esc((p.excerpt||'').slice(0,110))}${(p.excerpt||'').length>110?'…':''}</div>
+        <div class="bc-meta">
+          <span class="bc-author">EmberCommons Editorial</span>
+          <span class="bc-read">${p.read_minutes||3} min →</span>
+        </div>
+      </a>`).join('');
+  }catch(e){}
+}
+
+boot();
+</script>
+<script src="/legal.js" data-product="world"></script>
+</body>
+</html>
