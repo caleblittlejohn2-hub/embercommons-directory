@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apply to List Your Business — EmberCommons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100;1,9..144,100;1,9..144,200;1,9..144,300&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{--void:#030402;--deep:#0A0E07;--soil:#141A0C;--jade:#00D48A;--jade-l:#3DFFC0;--ember:#D4720A;--ember-l:#FF9B3A;--gold:#C8A84B;--gold-l:#FFE08A;--p0:#F4EDD8;--p1:#D8CCAA;--p2:#9A8A68;--p3:#4A3E28;--be:rgba(212,114,10,.12);--bj:rgba(0,212,138,.1);--bjl:rgba(0,212,138,.25);--bgl:rgba(200,168,75,.25)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--deep);color:var(--p1);font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;-webkit-font-smoothing:antialiased;min-height:100vh}
+::selection{background:rgba(200,168,75,.2);color:var(--p0)}
+::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--gold),var(--ember))}
+a{text-decoration:none}
+
+/* NAV */
+#nav{position:sticky;top:0;z-index:900;background:rgba(10,14,7,.97);backdrop-filter:blur(28px) saturate(1.5);border-bottom:1px solid rgba(200,168,75,.08);padding:0 2.5rem;height:62px;display:flex;align-items:center;gap:1.5rem}
+.n-logo{display:flex;flex-direction:column;flex-shrink:0;text-decoration:none}
+.n-logo-main{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.4rem;color:var(--p0);background:linear-gradient(125deg,var(--gold-l),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;line-height:1}
+.n-logo-sub{font-family:'DM Mono',monospace;font-size:.38rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(200,168,75,.4);margin-top:.15rem;font-style:normal}
+.n-back{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.16em;text-transform:uppercase;color:var(--p3);margin-left:auto;text-decoration:none;transition:color .25s}
+.n-back:hover{color:var(--gold)}
+
+/* PAGE WRAP */
+.page-wrap{max-width:780px;margin:0 auto;padding:4rem 2.5rem 6rem}
+
+/* HERO */
+.ob-hero{text-align:center;margin-bottom:4rem}
+.ob-eye{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+.ob-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:clamp(2.5rem,6vw,4.5rem);color:var(--p0);line-height:1.02;margin-bottom:1rem}
+.ob-sub{font-style:italic;font-size:1.05rem;color:var(--p3);line-height:2;max-width:520px;margin:0 auto}
+
+/* STEP INDICATOR */
+.steps{display:flex;align-items:center;gap:.4rem;margin-bottom:3rem;justify-content:center;flex-wrap:wrap}
+.step-item{display:flex;align-items:center;gap:.4rem;font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.14em;text-transform:uppercase;color:var(--p3)}
+.step-n{width:24px;height:24px;border-radius:50%;border:1px solid rgba(200,168,75,.2);display:flex;align-items:center;justify-content:center;font-size:.55rem;transition:all .35s}
+.step-item.active .step-n{background:var(--gold);border-color:var(--gold);color:var(--void)}
+.step-item.active{color:var(--gold)}
+.step-item.done .step-n{background:rgba(200,168,75,.15);border-color:var(--bgl);color:var(--gold)}
+.step-item.done{color:rgba(200,168,75,.5)}
+.step-arrow{color:rgba(200,168,75,.2);font-size:.55rem;font-family:'DM Mono',monospace}
+
+/* PANELS */
+.ob-panel{display:none}
+.ob-panel.active{display:block}
+.panel-head{margin-bottom:2rem}
+.ph-step{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.ph-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:clamp(1.8rem,4vw,2.8rem);color:var(--p0);margin-bottom:.4rem}
+.ph-body{font-style:italic;font-size:1rem;color:var(--p3);line-height:2}
+
+/* TIER CARDS */
+.tier-cards{display:flex;flex-direction:column;gap:.9rem;margin-bottom:2rem}
+.tier-card{
+  border:1px solid rgba(200,168,75,.1);border-radius:2px;
+  padding:1.5rem 1.8rem;cursor:pointer;
+  transition:all .35s;background:linear-gradient(145deg,rgba(20,26,12,.88),rgba(12,18,8,.95));
+  display:flex;align-items:flex-start;gap:1.2rem;position:relative;
+}
+.tier-card:hover{border-color:rgba(200,168,75,.3);transform:translateX(5px)}
+.tier-card.selected{border-color:var(--bgl);background:rgba(200,168,75,.06)}
+.tier-card.selected::before{content:'✦';position:absolute;top:1rem;right:1rem;font-size:.6rem;color:var(--gold)}
+.tc-price{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.8rem;color:var(--gold-l);min-width:70px;line-height:1}
+.tc-price span{font-size:.9rem;color:var(--p3)}
+.tc-info{}
+.tc-name{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.16em;text-transform:uppercase;color:var(--p1);margin-bottom:.35rem;font-style:normal}
+.tc-features{font-style:italic;font-size:.93rem;color:var(--p3);line-height:1.85}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-grid.full{grid-template-columns:1fr}
+.f-field{display:flex;flex-direction:column;gap:.35rem}
+.f-field label{font-family:'DM Mono',monospace;font-size:.43rem;letter-spacing:.18em;text-transform:uppercase;color:var(--p3);font-style:normal}
+.f-field label span{color:var(--ember-l);margin-left:.3rem}
+.f-field input,.f-field select,.f-field textarea{background:rgba(3,4,2,.9);border:1px solid rgba(200,168,75,.12);border-radius:1px;padding:.8rem .95rem;color:var(--p0);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;outline:none;transition:border-color .3s;width:100%}
+.f-field input:focus,.f-field select:focus,.f-field textarea:focus{border-color:var(--gold);box-shadow:0 0 14px rgba(200,168,75,.08)}
+.f-field input::placeholder,.f-field textarea::placeholder{color:rgba(154,138,104,.25)}
+.f-field select{-webkit-appearance:none;cursor:pointer}
+.f-field select option{background:#0A0E07;color:var(--p1)}
+.f-field textarea{resize:vertical;min-height:100px}
+@media(max-width:560px){.form-grid{grid-template-columns:1fr}}
+
+/* DECLARATIONS */
+.decls{display:flex;flex-direction:column;gap:.9rem;margin-bottom:2rem}
+.decl{display:flex;align-items:flex-start;gap:.8rem;cursor:pointer}
+.decl input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:.2rem;accent-color:var(--gold);cursor:pointer}
+.decl-text{font-style:italic;font-size:.96rem;color:var(--p2);line-height:1.9}
+.decl-text strong{color:var(--p1);font-weight:400;font-style:normal}
+.decl-text a{color:var(--gold)}
+
+/* REVIEW CARD */
+.review-card{background:linear-gradient(145deg,rgba(20,26,12,.9),rgba(12,18,8,.96));border:1px solid rgba(200,168,75,.12);border-radius:2px;padding:1.8rem;margin-bottom:2rem}
+.rv-row{display:flex;gap:.8rem;padding:.55rem 0;border-bottom:1px solid rgba(200,168,75,.05)}
+.rv-row:last-child{border-bottom:none}
+.rv-label{font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.14em;text-transform:uppercase;color:var(--p3);width:120px;flex-shrink:0;padding-top:.12rem;font-style:normal}
+.rv-val{font-style:italic;font-size:.95rem;color:var(--p1)}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:.7rem;align-items:center;margin-top:1.5rem;flex-wrap:wrap}
+.btn-gold{display:inline-flex;align-items:center;gap:.6rem;font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:.97rem;color:var(--void);background:linear-gradient(135deg,var(--gold-l),var(--gold));border:none;border-radius:1px;padding:.88rem 2rem;cursor:pointer;transition:all .3s}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 34px rgba(200,168,75,.38)}
+.btn-gold:disabled{opacity:.5;pointer-events:none}
+.btn-back{font-style:italic;font-size:.95rem;color:var(--p3);background:none;border:none;cursor:pointer;transition:color .25s}
+.btn-back:hover{color:var(--p2)}
+.form-msg{font-family:'DM Mono',monospace;font-size:.43rem;letter-spacing:.14em;text-transform:uppercase;padding:.6rem .85rem;border-radius:1px;display:none;margin-top:1rem}
+.form-msg.show{display:block}
+.form-msg.ok{background:rgba(0,212,138,.07);color:var(--jade);border:1px solid var(--bjl)}
+.form-msg.err{background:rgba(212,114,10,.07);color:var(--ember-l);border:1px solid rgba(212,114,10,.2)}
+
+/* SUCCESS */
+#success{display:none;text-align:center;padding:4rem 2rem}
+.su-glyph{font-size:3.5rem;margin-bottom:1.5rem;display:block;filter:drop-shadow(0 0 24px rgba(200,168,75,.65))}
+.su-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:2.4rem;color:var(--p0);margin-bottom:.8rem}
+.su-body{font-style:italic;font-size:1.05rem;color:var(--p3);line-height:2;margin-bottom:2rem;max-width:460px;margin-left:auto;margin-right:auto}
+.su-id{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);padding:.55rem .9rem;background:rgba(200,168,75,.06);border:1px solid rgba(200,168,75,.15);border-radius:1px;display:inline-block;margin-bottom:2rem}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,75,.1),rgba(212,114,10,.06),transparent);margin:2.5rem 0}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="index.html" class="n-logo">
+    <span class="n-logo-main">EmberCommons</span>
+    <span class="n-logo-sub">by Emberline · Business Directory</span>
+  </a>
+  <a href="index.html" class="n-back">← Back to Directory</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="ob-hero">
+    <div class="ob-eye">Business Listing Application</div>
+    <h1 class="ob-title">Apply to join<br><em>EmberCommons.</em></h1>
+    <p class="ob-sub">Not a form to fill out. A conversation to start. Every application is reviewed by a real person before going live.</p>
+  </div>
+
+  <!-- STEP INDICATOR -->
+  <div class="steps">
+    <div class="step-item active" id="si-1"><span class="step-n">1</span>Choose Tier</div>
+    <span class="step-arrow">→</span>
+    <div class="step-item" id="si-2"><span class="step-n">2</span>Your Business</div>
+    <span class="step-arrow">→</span>
+    <div class="step-item" id="si-3"><span class="step-n">3</span>Contact</div>
+    <span class="step-arrow">→</span>
+    <div class="step-item" id="si-4"><span class="step-n">4</span>Declarations</div>
+    <span class="step-arrow">→</span>
+    <div class="step-item" id="si-5"><span class="step-n">5</span>Review</div>
+  </div>
+
+  <form onsubmit="return false">
+
+    <!-- STEP 1: TIER -->
+    <div class="ob-panel active" id="panel-1">
+      <div class="panel-head">
+        <div class="ph-step">Step 1 of 5</div>
+        <h2 class="ph-title">Choose your listing tier.</h2>
+        <p class="ph-body">All tiers include the same review process and quality standards. The tier determines your visibility and the tools available in your dashboard.</p>
+      </div>
+      <div class="tier-cards">
+        <div class="tier-card" id="tc-standard" onclick="selectTier('standard')">
+          <div class="tc-price">$49<span>/mo</span></div>
+          <div class="tc-info">
+            <div class="tc-name">Standard Listing</div>
+            <div class="tc-features">Name, description, category, contact, service area · 3 invoices/month · Listed in the directory</div>
+          </div>
+        </div>
+        <div class="tier-card" id="tc-featured" onclick="selectTier('featured')">
+          <div class="tc-price">$149<span>/mo</span></div>
+          <div class="tc-info">
+            <div class="tc-name">Featured Listing</div>
+            <div class="tc-features">Standard + logo, photo gallery, priority placement · 25 invoices/month · Client messaging · 1 blog post/month · Monthly spotlight eligibility</div>
+          </div>
+        </div>
+        <div class="tier-card" id="tc-partner" onclick="selectTier('partner')">
+          <div class="tc-price">$299<span>/mo</span></div>
+          <div class="tc-info">
+            <div class="tc-name">Partner Listing</div>
+            <div class="tc-features">Featured + dedicated partner page · Emberline Partner badge · Unlimited invoices · 4 blog posts/month · Guaranteed weekly spotlight · Co-marketing opportunities</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-gold" id="btn-step1" onclick="goStep(2)" disabled>Continue →</button>
+      </div>
+      <div class="form-msg err" id="msg-1"></div>
+    </div>
+
+    <!-- STEP 2: BUSINESS INFO -->
+    <div class="ob-panel" id="panel-2">
+      <div class="panel-head">
+        <div class="ph-step">Step 2 of 5</div>
+        <h2 class="ph-title">Tell us about your business.</h2>
+        <p class="ph-body">This is what appears on your listing. Be direct and accurate — this is how customers will find and understand you.</p>
+      </div>
+      <div class="form-grid">
+        <div class="f-field"><label>Business Name <span>✦</span></label><input type="text" id="biz-name" placeholder="Your registered or DBA name"></div>
+        <div class="f-field"><label>Category <span>✦</span></label>
+          <select id="biz-cat">
+            <option value="" disabled selected>Select category...</option>
+            <option value="home-services">Home Services</option>
+            <option value="healthcare">Healthcare</option>
+            <option value="education">Education</option>
+            <option value="technology">Technology</option>
+            <option value="beauty-wellness">Beauty &amp; Wellness</option>
+            <option value="food-beverage">Food &amp; Beverage</option>
+            <option value="professional">Professional Services</option>
+            <option value="arts-creative">Arts &amp; Creative</option>
+            <option value="retail">Retail &amp; Shopping</option>
+            <option value="community">Community &amp; Nonprofits</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid full">
+        <div class="f-field"><label>Tagline <span>✦</span></label><input type="text" id="biz-tagline" placeholder="One sentence — what makes your business worth finding?"></div>
+      </div>
+      <div class="form-grid full">
+        <div class="f-field"><label>Description <span>✦</span></label><textarea id="biz-desc" rows="4" placeholder="Describe your business, what you do, and who you serve. This is what customers read. Be clear and honest."></textarea></div>
+      </div>
+      <div class="form-grid">
+        <div class="f-field"><label>Service Area <span>✦</span></label>
+          <select id="biz-area">
+            <option value="local">Local (San Antonio area)</option>
+            <option value="regional">Regional (South Texas)</option>
+            <option value="national">National</option>
+            <option value="remote">Remote / Online</option>
+          </select>
+        </div>
+        <div class="f-field"><label>City</label><input type="text" id="biz-city" placeholder="San Antonio" value="San Antonio"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-gold" onclick="goStep(3)">Continue →</button>
+        <button class="btn-back" onclick="goStep(1)">← Back</button>
+      </div>
+      <div class="form-msg err" id="msg-2"></div>
+    </div>
+
+    <!-- STEP 3: CONTACT -->
+    <div class="ob-panel" id="panel-3">
+      <div class="panel-head">
+        <div class="ph-step">Step 3 of 5</div>
+        <h2 class="ph-title">Your contact information.</h2>
+        <p class="ph-body">This is how customers and Emberline will reach you. Your email creates your dashboard account.</p>
+      </div>
+      <div class="form-grid">
+        <div class="f-field"><label>Your Name <span>✦</span></label><input type="text" id="con-name" placeholder="Full name" autocomplete="name"></div>
+        <div class="f-field"><label>Business Email <span>✦</span></label><input type="email" id="con-email" placeholder="you@yourbusiness.com" autocomplete="email"></div>
+      </div>
+      <div class="form-grid">
+        <div class="f-field"><label>Phone</label><input type="tel" id="con-phone" placeholder="(210) 000-0000" autocomplete="tel"></div>
+        <div class="f-field"><label>Website</label><input type="url" id="con-website" placeholder="https://yourbusiness.com"></div>
+      </div>
+      <div class="form-grid full">
+        <div class="f-field"><label>Password (for your dashboard) <span>✦</span></label><input type="password" id="con-pass" placeholder="Minimum 8 characters" minlength="8"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-gold" onclick="goStep(4)">Continue →</button>
+        <button class="btn-back" onclick="goStep(2)">← Back</button>
+      </div>
+      <div class="form-msg err" id="msg-3"></div>
+    </div>
+
+    <!-- STEP 4: DECLARATIONS -->
+    <div class="ob-panel" id="panel-4">
+      <div class="panel-head">
+        <div class="ph-step">Step 4 of 5</div>
+        <h2 class="ph-title">Declarations.</h2>
+        <p class="ph-body">Please read each declaration carefully. These form the basis of your listing agreement with EmberCommons.</p>
+      </div>
+      <div class="decls">
+        <label class="decl" id="decl-legal"><input type="checkbox" id="d-legal"><div class="decl-text"><strong>My business is legally registered and operating.</strong> I have the legal authority to represent this business and create a listing on its behalf.</div></label>
+        <label class="decl" id="decl-accurate"><input type="checkbox" id="d-accurate"><div class="decl-text"><strong>The information I've provided is accurate.</strong> I understand that false or misleading information is grounds for immediate removal from the directory without refund.</div></label>
+        <label class="decl" id="decl-guidelines"><input type="checkbox" id="d-guidelines"><div class="decl-text"><strong>I have read and agree to the EmberCommons Community Guidelines.</strong> I understand that my listing will be reviewed against these standards and that Emberline's editorial decision is final. <a href="guidelines.html" target="_blank">Read guidelines →</a></div></label>
+        <label class="decl" id="decl-payment"><input type="checkbox" id="d-payment"><div class="decl-text"><strong>I understand this is a monthly subscription.</strong> Payment begins only after my listing is approved. I can cancel at any time. No charge is applied if my application is declined.</div></label>
+      </div>
+      <div class="btn-row">
+        <button class="btn-gold" onclick="goStep(5)">Continue →</button>
+        <button class="btn-back" onclick="goStep(3)">← Back</button>
+      </div>
+      <div class="form-msg err" id="msg-4"></div>
+    </div>
+
+    <!-- STEP 5: REVIEW & SUBMIT -->
+    <div class="ob-panel" id="panel-5">
+      <div class="panel-head">
+        <div class="ph-step">Step 5 of 5</div>
+        <h2 class="ph-title">Review &amp; submit.</h2>
+        <p class="ph-body">Take a moment to confirm everything is correct. Once submitted, your application enters our review queue immediately.</p>
+      </div>
+      <div class="review-card" id="review-summary"></div>
+      <div class="btn-row">
+        <button class="btn-gold" id="submit-btn" onclick="submitApplication()">✦ Submit Application</button>
+        <button class="btn-back" onclick="goStep(4)">← Back</button>
+      </div>
+      <div class="form-msg" id="msg-5"></div>
+    </div>
+
+  </form>
+
+  <!-- SUCCESS -->
+  <div id="success">
+    <span class="su-glyph">✦</span>
+    <h2 class="su-title">Application submitted.</h2>
+    <p class="su-body">Your listing application is in our review queue. We review every application personally and respond within 2–5 business days. You'll receive an email either way.</p>
+    <div class="su-id" id="su-ref"></div>
+    <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap">
+      <a href="index.html" class="btn-gold">← Browse the Directory</a>
+      <a href="blog.html" style="display:inline-flex;align-items:center;gap:.5rem;font-style:italic;font-size:.97rem;color:var(--p3);border:1px solid var(--be);border-radius:1px;padding:.86rem 1.6rem;transition:all .3s" onmouseover="this.style.borderColor='rgba(200,168,75,.3)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--be)';this.style.color='var(--p3)'">Read the Weekly →</a>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<script>
+const SB='https://rqytpqaswofdwhmsaykn.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxeXRwcWFzd29mZHdobXNheWtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MTU5MzksImV4cCI6MjA4ODQ5MTkzOX0.vzsT4oWSxKoWzfDmw7SaCaImA6_SshYwuLA9_nmNHtg';
+const sb=supabase.createClient(SB,SK);
+let step=1,selectedTier=null;
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function selectTier(t){
+  selectedTier=t;
+  document.querySelectorAll('.tier-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('tc-'+t)?.classList.add('selected');
+  document.getElementById('btn-step1').disabled=false;
+}
+
+function goStep(n){
+  if(n>step&&!validateStep(step))return;
+  step=n;
+  document.querySelectorAll('.ob-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+n)?.classList.add('active');
+  document.querySelectorAll('.step-item').forEach((s,i)=>{
+    s.classList.toggle('active',i+1===n);
+    s.classList.toggle('done',i+1<n);
+  });
+  if(n===5)buildReview();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function validateStep(n){
+  const msgEl=document.getElementById('msg-'+n);
+  const show=(m)=>{if(msgEl){msgEl.textContent=m;msgEl.className='form-msg err show';}return false;}
+  if(n===1&&!selectedTier)return show('Please select a listing tier.');
+  if(n===2){
+    if(!document.getElementById('biz-name').value.trim())return show('Business name is required.');
+    if(!document.getElementById('biz-cat').value)return show('Please select a category.');
+    if(!document.getElementById('biz-tagline').value.trim())return show('Tagline is required.');
+    if((document.getElementById('biz-desc').value||'').trim().length<50)return show('Please write a description of at least 50 characters.');
+  }
+  if(n===3){
+    if(!document.getElementById('con-name').value.trim())return show('Your name is required.');
+    const email=document.getElementById('con-email').value.trim();
+    if(!email||!email.includes('@'))return show('A valid email is required.');
+    if((document.getElementById('con-pass').value||'').length<8)return show('Password must be at least 8 characters.');
+  }
+  if(n===4){
+    const checks=['d-legal','d-accurate','d-guidelines','d-payment'];
+    const missing=checks.find(id=>!document.getElementById(id)?.checked);
+    if(missing)return show('Please check all declarations to continue.');
+  }
+  return true;
+}
+
+function buildReview(){
+  const tier={standard:'Standard ($49/mo)',featured:'Featured ($149/mo)',partner:'Partner ($299/mo)'}[selectedTier]||'—';
+  const rows=[
+    ['Tier',tier],['Business',document.getElementById('biz-name')?.value||'—'],
+    ['Category',(document.getElementById('biz-cat')?.value||'—').replace(/-/g,' ')],
+    ['Tagline',document.getElementById('biz-tagline')?.value||'—'],
+    ['Service Area',document.getElementById('biz-area')?.value||'—'],
+    ['Contact',document.getElementById('con-name')?.value+' · '+document.getElementById('con-email')?.value],
+    ['Website',document.getElementById('con-website')?.value||'Not provided'],
+  ];
+  document.getElementById('review-summary').innerHTML=rows.map(([l,v])=>`<div class="rv-row"><div class="rv-label">${l}</div><div class="rv-val">${esc(v)}</div></div>`).join('');
+}
+
+async function submitApplication(){
+  const btn=document.getElementById('submit-btn');
+  const msgEl=document.getElementById('msg-5');
+  btn.disabled=true;btn.textContent='Submitting...';
+
+  const email=document.getElementById('con-email').value.trim();
+  const pass=document.getElementById('con-pass').value;
+  const name=document.getElementById('con-name').value.trim();
+  const bizName=document.getElementById('biz-name').value.trim();
+
+  try{
+    // Create Supabase auth account
+    let userId=null;
+    const{data:authData,error:authErr}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+    if(authErr&&!authErr.message.includes('already registered'))throw authErr;
+    if(authData?.user)userId=authData.user.id;
+    else{
+      const{data:signIn}=await sb.auth.signInWithPassword({email,password:pass});
+      userId=signIn?.user?.id;
+    }
+
+    // Create directory listing (pending)
+    const{data:listing,error:listErr}=await sb.from('ember_directory_listings').insert({
+      business_name:bizName,
+      slug:bizName.toLowerCase().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').slice(0,60)+'-'+Date.now().toString().slice(-4),
+      tagline:document.getElementById('biz-tagline').value.trim(),
+      description:document.getElementById('biz-desc').value.trim(),
+      category:document.getElementById('biz-cat').value,
+      service_area:document.getElementById('biz-area').value,
+      city:document.getElementById('biz-city').value.trim()||null,
+      website_url:document.getElementById('con-website').value.trim()||null,
+      phone:document.getElementById('con-phone').value.trim()||null,
+      tier:selectedTier,
+      status:'pending',
+      subscription_status:'inactive',
+      owner_id:userId||null,
+      owner_email:email,
+      owner_name:name,
+      guidelines_agreed:true,
+    }).select().single();
+    if(listErr)throw listErr;
+
+    // Create onboarding record
+    await sb.from('ec_onboarding').insert({listing_id:listing.id,owner_email:email,step_current:2,step_profile:true});
+
+    // Write to inquiries table
+    await sb.from('inquiries').insert({name,email,message:`New EmberCommons listing application: ${bizName} (${selectedTier} tier)`,inquiry_type:'directory',source:'embercommons-onboard',created_at:new Date().toISOString()});
+
+    document.querySelector('form').style.display='none';
+    document.querySelector('.steps').style.display='none';
+    document.getElementById('success').style.display='block';
+    document.getElementById('su-ref').textContent='Application Ref: EC-'+listing.id.slice(0,8).toUpperCase();
+
+  }catch(e){
+    msgEl.textContent='Something went wrong: '+e.message+'. Email hello@emberlinegroup.org for help.';
+    msgEl.className='form-msg err show';
+    btn.disabled=false;btn.textContent='✦ Submit Application';
+  }
+}
+</script>
+<script src="/legal.js" data-product="world"></script>
+</body>
+</html>
