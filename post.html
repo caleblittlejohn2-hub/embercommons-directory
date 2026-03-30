@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EmberCommons Weekly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100;0,9..144,200;1,9..144,100;1,9..144,200;1,9..144,300;1,9..144,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{--void:#030402;--deep:#0A0E07;--soil:#141A0C;--jade:#00D48A;--ember:#D4720A;--ember-l:#FF9B3A;--gold:#C8A84B;--gold-l:#FFE08A;--p0:#F4EDD8;--p1:#D8CCAA;--p2:#9A8A68;--p3:#4A3E28;--be:rgba(212,114,10,.12);--bgl:rgba(200,168,75,.25)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--deep);color:var(--p1);font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(200,168,75,.2);color:var(--p0)}
+::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--gold),var(--ember))}
+a{text-decoration:none}
+
+/* READ PROGRESS */
+#progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--ember-l));z-index:9999;width:0;transition:width .1s linear}
+
+/* NAV */
+#nav{position:sticky;top:0;z-index:900;background:rgba(10,14,7,.97);backdrop-filter:blur(28px);border-bottom:1px solid rgba(200,168,75,.08);padding:0 2.5rem;height:62px;display:flex;align-items:center;gap:1.5rem}
+.n-logo{display:flex;flex-direction:column;flex-shrink:0;text-decoration:none}
+.n-logo-main{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.4rem;color:var(--p0);background:linear-gradient(125deg,var(--gold-l),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;line-height:1}
+.n-logo-sub{font-family:'DM Mono',monospace;font-size:.38rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(200,168,75,.4);margin-top:.15rem;font-style:normal}
+.n-back{font-family:'DM Mono',monospace;font-size:.44rem;letter-spacing:.16em;text-transform:uppercase;color:var(--p3);margin-left:auto;text-decoration:none;transition:color .25s}
+.n-back:hover{color:var(--gold)}
+
+/* ARTICLE LAYOUT */
+.article-wrap{max-width:720px;margin:0 auto;padding:4rem 2.5rem 6rem}
+
+/* HEADER */
+.art-header{margin-bottom:3.5rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(200,168,75,.08)}
+.art-issue{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.art-issue::before{content:'✦';font-size:.5rem}
+.art-title{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:clamp(2rem,5vw,3.5rem);color:var(--p0);line-height:1.08;margin-bottom:1rem}
+.art-excerpt{font-style:italic;font-size:1.1rem;color:var(--p2);line-height:2;margin-bottom:1.5rem}
+.art-meta{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.am-author{font-family:'DM Mono',monospace;font-size:.44rem;letter-spacing:.14em;text-transform:uppercase;color:var(--p2);font-style:normal}
+.am-date{font-family:'DM Mono',monospace;font-size:.44rem;letter-spacing:.14em;text-transform:uppercase;color:var(--p3);font-style:normal}
+.am-read{font-family:'DM Mono',monospace;font-size:.44rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-style:normal}
+
+/* ARTICLE BODY — Markdown rendered */
+.art-body{font-size:1.1rem;color:var(--p1);line-height:2.05}
+.art-body h1{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:clamp(1.8rem,4vw,2.8rem);color:var(--p0);margin:3rem 0 1rem;line-height:1.1}
+.art-body h2{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:clamp(1.4rem,3vw,2rem);color:var(--p0);margin:2.5rem 0 .8rem;border-bottom:1px solid rgba(200,168,75,.07);padding-bottom:.5rem}
+.art-body h3{font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.2rem;color:var(--p0);margin:2rem 0 .6rem}
+.art-body p{margin-bottom:1.3rem;color:var(--p2)}
+.art-body strong{color:var(--p0);font-weight:400;font-style:normal}
+.art-body em{color:var(--p1)}
+.art-body ul,.art-body ol{margin:1rem 0 1.5rem 1.5rem;color:var(--p2)}
+.art-body li{margin-bottom:.5rem;line-height:1.95}
+.art-body ul li::marker{color:var(--gold)}
+.art-body ol li::marker{color:var(--gold);font-family:'DM Mono',monospace;font-size:.85em}
+.art-body blockquote{border-left:2px solid var(--gold);padding:1rem 1.3rem;margin:1.5rem 0;background:rgba(200,168,75,.04);border-radius:0 2px 2px 0}
+.art-body blockquote p{color:var(--p1);margin-bottom:0}
+.art-body hr{height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,75,.15),rgba(212,114,10,.08),transparent);border:none;margin:2.5rem 0}
+.art-body code{font-family:'DM Mono',monospace;font-size:.88em;background:rgba(200,168,75,.06);color:var(--gold-l);padding:.15rem .4rem;border-radius:1px;font-style:normal}
+
+/* FOOTER */
+.art-footer{margin-top:4rem;padding-top:2.5rem;border-top:1px solid rgba(200,168,75,.07);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.af-back{font-style:italic;font-size:.95rem;color:var(--p3);text-decoration:none;transition:color .25s}
+.af-back:hover{color:var(--gold)}
+.af-cta{display:inline-flex;align-items:center;gap:.6rem;font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.16em;text-transform:uppercase;color:var(--void);background:linear-gradient(135deg,var(--gold-l),var(--gold));border:none;border-radius:1px;padding:.5rem 1.2rem;cursor:pointer;transition:all .3s;text-decoration:none}
+.af-cta:hover{box-shadow:0 4px 16px rgba(200,168,75,.35)}
+
+/* LOADING / ERROR */
+.post-loading{text-align:center;padding:6rem 2rem;font-family:'Fraunces',serif;font-style:italic;font-weight:100;font-size:1.5rem;color:var(--p3)}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav id="nav">
+  <a href="index.html" class="n-logo">
+    <span class="n-logo-main">EmberCommons</span>
+    <span class="n-logo-sub">by Emberline · Business Directory</span>
+  </a>
+  <a href="blog.html" class="n-back">← All Issues</a>
+</nav>
+
+<div class="article-wrap" id="article-wrap">
+  <div class="post-loading">Loading article...</div>
+</div>
+
+<script>
+const SB='https://rqytpqaswofdwhmsaykn.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxeXRwcWFzd29mZHdobXNheWtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MTU5MzksImV4cCI6MjA4ODQ5MTkzOX0.vzsT4oWSxKoWzfDmw7SaCaImA6_SshYwuLA9_nmNHtg';
+const sb=supabase.createClient(SB,SK);
+
+/* Simple markdown → HTML */
+function md(text){
+  if(!text)return'';
+  return text
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`(.+?)`/g,'<code>$1</code>')
+    .replace(/^> (.+)$/gm,'<blockquote><p>$1</p></blockquote>')
+    .replace(/^---$/gm,'<hr>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g,s=>'<ul>'+s+'</ul>')
+    .split('\n\n').map(p=>{
+      if(p.match(/^<(h[1-6]|ul|blockquote|hr)/))return p;
+      if(p.trim())return'<p>'+p.trim()+'</p>';
+      return'';
+    }).join('\n');
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function fmtDate(d){return d?new Date(d).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):''}
+
+async function loadPost(){
+  const slug=new URLSearchParams(window.location.search).get('slug');
+  const wrap=document.getElementById('article-wrap');
+  if(!slug){wrap.innerHTML='<div class="post-loading">No post specified. <a href="blog.html" style="color:var(--gold)">Browse all issues →</a></div>';return;}
+  const{data,error}=await sb.from('ec_blog_posts').select('*').eq('slug',slug).eq('is_published',true).single();
+  if(error||!data){wrap.innerHTML='<div class="post-loading">Post not found. <a href="blog.html" style="color:var(--gold)">Browse all issues →</a></div>';return;}
+
+  // Update page title and meta
+  document.title=`${data.title} — EmberCommons Weekly`;
+
+  const issueLabel=data.is_weekly?`Issue ${data.week_number} · ${data.week_year}`:(data.category_slug||'Editorial').replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+
+  wrap.innerHTML=`
+    <div class="art-header">
+      <div class="art-issue">${esc(issueLabel)}</div>
+      <h1 class="art-title">${esc(data.title)}</h1>
+      ${data.excerpt?`<p class="art-excerpt">${esc(data.excerpt)}</p>`:''}
+      <div class="art-meta">
+        <span class="am-author">${esc(data.author_name||'EmberCommons Editorial')}</span>
+        <span class="am-date">${fmtDate(data.published_at)}</span>
+        <span class="am-read">${data.read_minutes||3} min read</span>
+      </div>
+    </div>
+    <div class="art-body">${md(data.content)}</div>
+    <div class="art-footer">
+      <a href="blog.html" class="af-back">← All Issues</a>
+      <a href="onboard.html" class="af-cta">✦ List Your Business</a>
+    </div>`;
+
+  // Increment view count
+  sb.from('ec_blog_posts').update({view_count:(data.view_count||0)+1}).eq('id',data.id).then(()=>{});
+
+  // Read progress bar
+  window.addEventListener('scroll',()=>{
+    const doc=document.documentElement;
+    const pct=(doc.scrollTop/(doc.scrollHeight-doc.clientHeight))*100;
+    document.getElementById('progress').style.width=Math.min(pct,100)+'%';
+  });
+}
+
+loadPost();
+</script>
+<script src="/legal.js" data-product="world"></script>
+</body>
+</html>
